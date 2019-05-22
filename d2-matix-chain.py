@@ -1,3 +1,34 @@
+import sys
+
+def chainRecursive(chain, start = -1, end = -1):
+    '''
+    Use recursive
+    '''
+    if start is -1 and end is -1:
+        start = 0
+        end = len(chain) - 1
+
+    cost = 0
+    cols = rows = 0
+    order = ''
+    
+    if end == start:
+        return (0, chain[start][0], chain[start][1], chain[start][2])
+
+    _min = 99999999
+    for k in range (0, end - start):
+        lcost, lname, lrow, lcol = chainRecursive(chain, start, start + k)
+        rcost, rname, rrow, rcol = chainRecursive(chain, start + k + 1, end)
+        
+        cost = lcost + rcost + lrow * lcol * rcol
+
+        if cost < _min : 
+            _min = cost
+            rows = lrow
+            cols = rcol
+            order = '(%s%s)' % (lname, rname)
+    return (_min, order, rows, cols)
+
 def mult(chain):
     n = len(chain)
     cost = 0
@@ -26,7 +57,15 @@ def mult(chain):
 
     return (cost, order, rows, cols)
 
+data1 = [('A', 10, 20), ('B', 20, 10), ('C', 10, 100), ('D', 100, 10)]
+data2 = [('A', 10, 20), ('B', 20, 10), ('D', 10, 100), ('C', 100, 10), ('E', 10, 100), ('F', 100, 10)]
+
+print(mult([('A', 10, 20), ('B', 20, 10), ('C', 10, 100), ('D', 100, 10)]))
 print(mult([('A', 10, 20), ('B', 20, 10), ('D', 10, 100), ('C', 100, 10), ('E', 10, 100), ('F', 100, 10)]))
+
+
+print(chainRecursive(data1))
+print(chainRecursive(data2))
 
 def mult2(chain):
     n = len(chain)
@@ -52,4 +91,6 @@ def mult2(chain):
                     best = cost
                     aux[j, j + i] = cost, var, lrow, rcol
     return dict(zip(['cost', 'order', 'rows', 'cols'], aux[0, n - 1]))
-print(mult2([('A', 10, 20), ('B', 20, 10), ('C', 10, 100), ('D', 100, 10), ('E', 10, 100), ('F', 100, 10)]))
+    
+print(mult2(data1))
+print(mult2(data2))
